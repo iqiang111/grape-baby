@@ -1,0 +1,139 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Baby {
+  id        String   @id @default(cuid())
+  name      String
+  birthDate DateTime
+  gender    String
+  photo     String?
+  createdAt DateTime @default(now())
+
+  feedings    Feeding[]
+  growths     GrowthRecord[]
+  sleeps      SleepRecord[]
+  diapers     DiaperRecord[]
+  vaccinations Vaccination[]
+  doctorVisits DoctorVisit[]
+  temperatures Temperature[]
+  milestones  Milestone[]
+}
+
+model Feeding {
+  id       String   @id @default(cuid())
+  babyId   String
+  baby     Baby     @relation(fields: [babyId], references: [id])
+  time     DateTime
+  type     String   // breast_left, breast_right, bottle, formula
+  amount   Float?   // ml
+  duration Int?     // minutes
+  note     String?
+  createdAt DateTime @default(now())
+
+  @@index([babyId, time])
+}
+
+model GrowthRecord {
+  id        String   @id @default(cuid())
+  babyId    String
+  baby      Baby     @relation(fields: [babyId], references: [id])
+  date      DateTime
+  weight    Float?   // kg
+  height    Float?   // cm
+  headCirc  Float?   // cm
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([babyId, date])
+}
+
+model SleepRecord {
+  id        String   @id @default(cuid())
+  babyId    String
+  baby      Baby     @relation(fields: [babyId], references: [id])
+  startTime DateTime
+  endTime   DateTime?
+  quality   String?  // good, normal, poor
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([babyId, startTime])
+}
+
+model DiaperRecord {
+  id       String   @id @default(cuid())
+  babyId   String
+  baby     Baby     @relation(fields: [babyId], references: [id])
+  time     DateTime
+  type     String   // wet, dirty, both
+  color    String?
+  note     String?
+  createdAt DateTime @default(now())
+
+  @@index([babyId, time])
+}
+
+model Vaccination {
+  id         String   @id @default(cuid())
+  babyId     String
+  baby       Baby     @relation(fields: [babyId], references: [id])
+  name       String
+  doseNumber Int
+  scheduledDate DateTime
+  actualDate DateTime?
+  hospital   String?
+  batchNumber String?
+  note       String?
+  createdAt  DateTime @default(now())
+
+  @@index([babyId, scheduledDate])
+}
+
+model DoctorVisit {
+  id        String   @id @default(cuid())
+  babyId    String
+  baby      Baby     @relation(fields: [babyId], references: [id])
+  date      DateTime
+  hospital  String
+  doctor    String?
+  reason    String
+  diagnosis String?
+  prescription String?
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([babyId, date])
+}
+
+model Temperature {
+  id        String   @id @default(cuid())
+  babyId    String
+  baby      Baby     @relation(fields: [babyId], references: [id])
+  time      DateTime
+  value     Float    // celsius
+  method    String?  // ear, forehead, armpit, rectal
+  note      String?
+  createdAt DateTime @default(now())
+
+  @@index([babyId, time])
+}
+
+model Milestone {
+  id        String   @id @default(cuid())
+  babyId    String
+  baby      Baby     @relation(fields: [babyId], references: [id])
+  date      DateTime
+  title     String
+  category  String   // motor, language, social, cognitive
+  description String?
+  photo     String?
+  createdAt DateTime @default(now())
+
+  @@index([babyId, date])
+}
