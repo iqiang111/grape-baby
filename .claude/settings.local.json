@@ -22,7 +22,10 @@
       "Bash(cd:*)",
       "Bash(cd C:\\\\Users\\\\Gates\\\\VsCodeProject\\\\Grape:*)",
       "Bash(cd /c/Users/Gates/VsCodeProject/Grape && npx next build 2>&1)",
-      "Bash(cd /c/Users/Gates/VsCodeProject/Grape && DATABASE_URL=\"file:./prisma/dev.db\" npx prisma migrate dev --name init --create-only 2>&1)"
+      "Bash(cd /c/Users/Gates/VsCodeProject/Grape && DATABASE_URL=\"file:./prisma/dev.db\" npx prisma migrate dev --name init --create-only 2>&1)",
+      "Bash(fly version 2>&1 || \"$HOME/.fly/bin/fly\" version 2>&1 || \"/c/Users/Gates/.fly/bin/fly\" version 2>&1)",
+      "Bash(\"/c/Users/Gates/.fly/bin/fly\" auth:*)",
+      "Bash(cd /c/Users/Gates/VsCodeProject/Grape && \"/c/Users/Gates/.fly/bin/fly\" apps create grape-baby 2>&1)"
     ]
   }
 }

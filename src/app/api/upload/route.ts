@@ -4,6 +4,7 @@ import path from "path";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/heic", "image/heif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
 
 export async function POST(request: NextRequest) {
   try {
@@ -34,10 +35,9 @@ export async function POST(request: NextRequest) {
     const ext = file.name.split(".").pop() || "jpg";
     const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
 
-    const uploadDir = path.join(process.cwd(), "public", "uploads");
-    await mkdir(uploadDir, { recursive: true });
+    await mkdir(UPLOAD_DIR, { recursive: true });
 
-    const filePath = path.join(uploadDir, uniqueName);
+    const filePath = path.join(UPLOAD_DIR, uniqueName);
     await writeFile(filePath, buffer);
 
     return NextResponse.json({ path: `/uploads/${uniqueName}` });
