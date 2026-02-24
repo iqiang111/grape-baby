@@ -21,7 +21,8 @@
       "Bash(python3:*)",
       "Bash(cd:*)",
       "Bash(cd C:\\\\Users\\\\Gates\\\\VsCodeProject\\\\Grape:*)",
-      "Bash(cd /c/Users/Gates/VsCodeProject/Grape && npx next build 2>&1)"
+      "Bash(cd /c/Users/Gates/VsCodeProject/Grape && npx next build 2>&1)",
+      "Bash(cd /c/Users/Gates/VsCodeProject/Grape && DATABASE_URL=\"file:./prisma/dev.db\" npx prisma migrate dev --name init --create-only 2>&1)"
     ]
   }
 }
