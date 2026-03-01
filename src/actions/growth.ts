@@ -1,8 +1,10 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/db";
+import { growthRecord, baby } from "@/db/schema";
 import { BABY_ID } from "@/lib/constants";
 import { revalidatePath } from "next/cache";
+import { eq, asc } from "drizzle-orm";
 
 export async function addGrowthRecord(data: {
   date: string;
@@ -11,36 +13,57 @@ export async function addGrowthRecord(data: {
   headCirc?: number;
   note?: string;
 }) {
-  await prisma.growthRecord.create({
-    data: {
-      babyId: BABY_ID,
-      date: new Date(data.date),
-      weight: data.weight || null,
-      height: data.height || null,
-      headCirc: data.headCirc || null,
-      note: data.note || null,
-    },
+  const db = await getDb();
+  await db.insert(growthRecord).values({
+    babyId: BABY_ID,
+    date: new Date(data.date).toISOString(),
+    weight: data.weight || null,
+    height: data.height || null,
+    headCirc: data.headCirc || null,
+    note: data.note || null,
   });
   revalidatePath("/");
   revalidatePath("/growth");
 }
 
 export async function deleteGrowthRecord(id: string) {
-  await prisma.growthRecord.delete({ where: { id } });
+  const db = await getDb();
+  await db.delete(growthRecord).where(eq(growthRecord.id, id));
   revalidatePath("/");
   revalidatePath("/growth");
 }
 
 export async function getGrowthRecords() {
-  return prisma.growthRecord.findMany({
-    where: { babyId: BABY_ID },
-    orderBy: { date: "asc" },
-  });
+  const db = await getDb();
+  const rows = await db
+    .select()
+    .from(growthRecord)
+    .where(eq(growthRecord.babyId, BABY_ID))
+    .orderBy(asc(growthRecord.date));
+
+  return rows.map((row) => ({
+    ...row,
+    date: new Date(row.date),
+    createdAt: new Date(row.createdAt),
+  }));
 }
 
 export async function getBabyInfo() {
-  return prisma.baby.findUnique({
-    where: { id: BABY_ID },
-    select: { id: true, name: true, birthDate: true, gender: true },
-  });
+  const db = await getDb();
+  const rows = await db
+    .select({
+      id: baby.id,
+      name: baby.name,
+      birthDate: baby.birthDate,
+      gender: baby.gender,
+    })
+    .from(baby)
+    .where(eq(baby.id, BABY_ID))
+    .limit(1);
+
+  if (rows.length === 0) return null;
+  return {
+    ...rows[0],
+    birthDate: new Date(rows[0].birthDate),
+  };
 }

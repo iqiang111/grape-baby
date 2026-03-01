@@ -1,11 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-import { writeFile, mkdir } from "fs/promises";
-import path from "path";
+import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/heic", "image/heif"];
 const ALLOWED_EXTS = ["jpg", "jpeg", "png", "gif", "webp", "heic", "heif"];
 const MAX_SIZE = 5 * 1024 * 1024; // 5MB
-const UPLOAD_DIR = process.env.UPLOAD_DIR || path.join(process.cwd(), "public", "uploads");
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,17 +30,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
-
     const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext || "jpg"}`;
 
-    await mkdir(UPLOAD_DIR, { recursive: true });
+    const { env } = await getCloudflareContext();
+    await env.R2.put(uniqueName, file.stream(), {
+      httpMetadata: { contentType: file.type || "image/jpeg" },
+    });
 
-    const filePath = path.join(UPLOAD_DIR, uniqueName);
-    await writeFile(filePath, buffer);
-
-    return NextResponse.json({ path: `/uploads/${uniqueName}` });
+    return NextResponse.json({ path: `/api/uploads/${uniqueName}` });
   } catch {
     return NextResponse.json({ error: "上传失败，请重试" }, { status: 500 });
   }

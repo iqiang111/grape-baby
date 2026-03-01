@@ -4,20 +4,26 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "eslint"
+    "build": "opennextjs-cloudflare build",
+    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
+    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
+    "lint": "eslint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate:local": "wrangler d1 migrations apply grape-db --local",
+    "db:migrate:remote": "wrangler d1 migrations apply grape-db --remote",
+    "db:seed:local": "wrangler d1 execute grape-db --local --file=src/db/seed.sql"
   },
   "dependencies": {
-    "@prisma/client": "^6.19.2",
+    "@opennextjs/cloudflare": "^1.2.1",
+    "@paralleldrive/cuid2": "^2.2.2",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "drizzle-orm": "^0.44.2",
     "framer-motion": "^12.34.3",
     "geist": "^1.7.0",
     "lucide-react": "^0.575.0",
     "next": "16.1.6",
-    "prisma": "^6.19.2",
     "react": "19.2.3",
     "react-dom": "19.2.3",
     "recharts": "^3.7.0",
@@ -25,13 +31,16 @@
     "zod": "^4.3.6"
   },
   "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250303.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.1",
     "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "wrangler": "^4.14.4"
   }
 }

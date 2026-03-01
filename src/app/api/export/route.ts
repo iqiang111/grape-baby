@@ -1,10 +1,14 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getDb } from "@/db";
+import { baby, feeding, sleepRecord, diaperRecord, growthRecord, vaccination, doctorVisit, temperature, milestone } from "@/db/schema";
 import { BABY_ID } from "@/lib/constants";
+import { eq, desc, asc } from "drizzle-orm";
 
 export async function GET() {
+  const db = await getDb();
+
   const [
-    baby,
+    babyRows,
     feedings,
     sleepRecords,
     diaperRecords,
@@ -14,20 +18,20 @@ export async function GET() {
     temperatures,
     milestones,
   ] = await Promise.all([
-    prisma.baby.findUnique({ where: { id: BABY_ID } }),
-    prisma.feeding.findMany({ where: { babyId: BABY_ID }, orderBy: { time: "desc" } }),
-    prisma.sleepRecord.findMany({ where: { babyId: BABY_ID }, orderBy: { startTime: "desc" } }),
-    prisma.diaperRecord.findMany({ where: { babyId: BABY_ID }, orderBy: { time: "desc" } }),
-    prisma.growthRecord.findMany({ where: { babyId: BABY_ID }, orderBy: { date: "desc" } }),
-    prisma.vaccination.findMany({ where: { babyId: BABY_ID }, orderBy: { scheduledDate: "desc" } }),
-    prisma.doctorVisit.findMany({ where: { babyId: BABY_ID }, orderBy: { date: "desc" } }),
-    prisma.temperature.findMany({ where: { babyId: BABY_ID }, orderBy: { time: "desc" } }),
-    prisma.milestone.findMany({ where: { babyId: BABY_ID }, orderBy: { date: "desc" } }),
+    db.select().from(baby).where(eq(baby.id, BABY_ID)).limit(1),
+    db.select().from(feeding).where(eq(feeding.babyId, BABY_ID)).orderBy(desc(feeding.time)),
+    db.select().from(sleepRecord).where(eq(sleepRecord.babyId, BABY_ID)).orderBy(desc(sleepRecord.startTime)),
+    db.select().from(diaperRecord).where(eq(diaperRecord.babyId, BABY_ID)).orderBy(desc(diaperRecord.time)),
+    db.select().from(growthRecord).where(eq(growthRecord.babyId, BABY_ID)).orderBy(desc(growthRecord.date)),
+    db.select().from(vaccination).where(eq(vaccination.babyId, BABY_ID)).orderBy(desc(vaccination.scheduledDate)),
+    db.select().from(doctorVisit).where(eq(doctorVisit.babyId, BABY_ID)).orderBy(desc(doctorVisit.date)),
+    db.select().from(temperature).where(eq(temperature.babyId, BABY_ID)).orderBy(desc(temperature.time)),
+    db.select().from(milestone).where(eq(milestone.babyId, BABY_ID)).orderBy(desc(milestone.date)),
   ]);
 
   const data = {
     exportDate: new Date().toISOString(),
-    baby,
+    baby: babyRows[0] || null,
     feedings,
     sleepRecords,
     diaperRecords,

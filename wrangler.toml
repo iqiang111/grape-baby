@@ -1,0 +1,15 @@
+name = "grape-baby"
+compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2025-12-30"
+
+[vars]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "grape-db"
+database_id = "a5ca6857-cb43-40b5-bb94-b2adbdf735ef"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "grape-uploads"

@@ -2,60 +2,60 @@
 CREATE TABLE "Baby" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "name" TEXT NOT NULL,
-    "birthDate" DATETIME NOT NULL,
+    "birthDate" TEXT NOT NULL,
     "gender" TEXT NOT NULL,
     "photo" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now'))
 );
 
 -- CreateTable
 CREATE TABLE "Feeding" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "babyId" TEXT NOT NULL,
-    "time" DATETIME NOT NULL,
+    "time" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "amount" REAL,
     "duration" INTEGER,
     "note" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "Feeding_babyId_fkey" FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "GrowthRecord" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "babyId" TEXT NOT NULL,
-    "date" DATETIME NOT NULL,
+    "date" TEXT NOT NULL,
     "weight" REAL,
     "height" REAL,
     "headCirc" REAL,
     "note" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "GrowthRecord_babyId_fkey" FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "SleepRecord" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "babyId" TEXT NOT NULL,
-    "startTime" DATETIME NOT NULL,
-    "endTime" DATETIME,
+    "startTime" TEXT NOT NULL,
+    "endTime" TEXT,
     "quality" TEXT,
     "note" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "SleepRecord_babyId_fkey" FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "DiaperRecord" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "babyId" TEXT NOT NULL,
-    "time" DATETIME NOT NULL,
+    "time" TEXT NOT NULL,
     "type" TEXT NOT NULL,
     "color" TEXT,
     "note" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "DiaperRecord_babyId_fkey" FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
@@ -64,53 +64,53 @@ CREATE TABLE "Vaccination" (
     "babyId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "doseNumber" INTEGER NOT NULL,
-    "scheduledDate" DATETIME NOT NULL,
-    "actualDate" DATETIME,
+    "scheduledDate" TEXT NOT NULL,
+    "actualDate" TEXT,
     "hospital" TEXT,
     "batchNumber" TEXT,
     "note" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "Vaccination_babyId_fkey" FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "DoctorVisit" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "babyId" TEXT NOT NULL,
-    "date" DATETIME NOT NULL,
+    "date" TEXT NOT NULL,
     "hospital" TEXT NOT NULL,
     "doctor" TEXT,
     "reason" TEXT NOT NULL,
     "diagnosis" TEXT,
     "prescription" TEXT,
     "note" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "DoctorVisit_babyId_fkey" FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Temperature" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "babyId" TEXT NOT NULL,
-    "time" DATETIME NOT NULL,
+    "time" TEXT NOT NULL,
     "value" REAL NOT NULL,
     "method" TEXT,
     "note" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "Temperature_babyId_fkey" FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateTable
 CREATE TABLE "Milestone" (
     "id" TEXT NOT NULL PRIMARY KEY,
     "babyId" TEXT NOT NULL,
-    "date" DATETIME NOT NULL,
+    "date" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "category" TEXT NOT NULL,
     "description" TEXT,
     "photo" TEXT,
-    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    CONSTRAINT "Milestone_babyId_fkey" FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
+    "createdAt" TEXT NOT NULL DEFAULT (datetime('now')),
+    FOREIGN KEY ("babyId") REFERENCES "Baby" ("id") ON DELETE RESTRICT ON UPDATE CASCADE
 );
 
 -- CreateIndex
