@@ -25,8 +25,8 @@ const items = [
   { href: "/milestones", label: "里程碑", icon: Star },
 ];
 
-const mainItems = items.slice(0, 4);
-const morePaths = ["/more", "/growth", "/health", "/milestones", "/calendar"];
+const mainItems = [items[0], items[1], items[2], items[3], items[6]];
+const morePaths = ["/more", "/growth", "/health", "/calendar"];
 
 export function MobileNav() {
   const pathname = usePathname();
