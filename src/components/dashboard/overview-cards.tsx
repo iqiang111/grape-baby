@@ -2,7 +2,7 @@
 
 import { Baby, Droplets, Moon, Clock } from "lucide-react";
 
-const BIRTH_DATE = new Date("2026-01-06");
+const BIRTH_DATE = new Date("2026-01-06T00:00:00+08:00");
 
 interface OverviewStats {
   feedingCount: number;
@@ -15,7 +15,7 @@ interface OverviewStats {
 function getBabyAgeDays() {
   const now = new Date();
   const diff = now.getTime() - BIRTH_DATE.getTime();
-  return Math.floor(diff / (1000 * 60 * 60 * 24));
+  return Math.floor(diff / (1000 * 60 * 60 * 24)) + 1;
 }
 
 function getRelativeTime(dateStr: string | null) {
