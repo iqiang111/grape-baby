@@ -193,7 +193,7 @@ export function SleepForm({ activeSleep }: SleepFormProps) {
                 </span>
                 {isActive && activeSleep && (
                   <span className="text-xs text-muted-foreground mt-1">
-                    开始于 {new Date(activeSleep.startTime).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" })}
+                    开始于 {new Date(activeSleep.startTime).toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", timeZone: "Asia/Shanghai" })}
                   </span>
                 )}
               </div>

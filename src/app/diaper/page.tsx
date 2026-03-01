@@ -45,7 +45,7 @@ function buildWeekData(
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toLocaleDateString("zh-CN", { weekday: "short" });
+    const key = d.toLocaleDateString("zh-CN", { weekday: "short", timeZone: "Asia/Shanghai" });
     const dayStart = new Date(d);
     dayStart.setHours(0, 0, 0, 0);
     const dayEnd = new Date(d);

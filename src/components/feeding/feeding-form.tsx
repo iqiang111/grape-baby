@@ -49,7 +49,7 @@ export function FeedingForm({ open, onClose }: FeedingFormProps) {
 
     startTransition(async () => {
       await addFeeding({
-        time,
+        time: new Date(time).toISOString(),
         type,
         amount: amount ? Number(amount) : undefined,
         note: note.trim() || undefined,

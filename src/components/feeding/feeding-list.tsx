@@ -31,7 +31,7 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 function getTimePeriod(date: Date | string): string {
-  const h = new Date(date).getHours();
+  const h = parseInt(new Date(date).toLocaleTimeString("en-US", { hour: "numeric", hour12: false, timeZone: "Asia/Shanghai" }), 10);
   if (h >= 6 && h < 12) return "上午";
   if (h >= 12 && h < 18) return "下午";
   if (h >= 18 && h < 22) return "晚上";

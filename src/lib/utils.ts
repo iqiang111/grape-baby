@@ -1,18 +1,20 @@
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 
+const TZ = "Asia/Shanghai";
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
 export function formatTime(date: Date | string) {
   const d = new Date(date);
-  return d.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString("zh-CN", { hour: "2-digit", minute: "2-digit", timeZone: TZ });
 }
 
 export function formatDate(date: Date | string) {
   const d = new Date(date);
-  return d.toLocaleDateString("zh-CN", { month: "long", day: "numeric" });
+  return d.toLocaleDateString("zh-CN", { month: "long", day: "numeric", timeZone: TZ });
 }
 
 export function formatDateTime(date: Date | string) {
@@ -22,6 +24,7 @@ export function formatDateTime(date: Date | string) {
     day: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: TZ,
   });
 }
 
@@ -36,6 +39,12 @@ export function getRelativeTime(date: Date | string) {
   if (minutes < 60) return `${minutes}分钟前`;
   if (hours < 24) return `${hours}小时前`;
   return formatDate(date);
+}
+
+/** 返回 UTC Date 对应的中国日期字符串 "YYYY-MM-DD" */
+export function toChinaDateStr(date: Date | string): string {
+  const d = new Date(date);
+  return d.toLocaleDateString("sv-SE", { timeZone: TZ }); // sv-SE locale gives "YYYY-MM-DD"
 }
 
 export function getDayStart(date: Date = new Date()) {

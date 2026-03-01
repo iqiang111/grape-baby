@@ -37,7 +37,9 @@ function getMinutesBetween(start: Date, end: Date) {
 // Convert a Date to its position in a 24-hour bar (0-100%)
 function timeToPercent(date: Date) {
   const d = new Date(date);
-  return ((d.getHours() * 60 + d.getMinutes()) / 1440) * 100;
+  const h = parseInt(d.toLocaleTimeString("en-US", { hour: "numeric", hour12: false, timeZone: "Asia/Shanghai" }), 10);
+  const m = parseInt(d.toLocaleTimeString("en-US", { minute: "numeric", timeZone: "Asia/Shanghai" }), 10);
+  return ((h * 60 + m) / 1440) * 100;
 }
 
 export function SleepList({ records }: SleepListProps) {

@@ -77,6 +77,7 @@ export function TemperatureTracker({ temperatures }: TemperatureTrackerProps) {
         day: "numeric",
         hour: "2-digit",
         minute: "2-digit",
+        timeZone: "Asia/Shanghai",
       }),
       value: typeof t.value === "number" ? t.value : Number(t.value),
     }));

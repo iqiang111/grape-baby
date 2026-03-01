@@ -231,6 +231,7 @@ export function DoctorVisitForm({ visits }: DoctorVisitFormProps) {
                       {new Date(visit.date).toLocaleDateString("zh-CN", {
                         month: "short",
                         day: "numeric",
+                        timeZone: "Asia/Shanghai",
                       })}
                     </span>
                   </div>

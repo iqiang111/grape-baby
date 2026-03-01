@@ -2,6 +2,7 @@ import { getMonthSummary } from "@/actions/calendar";
 import { getFeedingStats } from "@/actions/feeding";
 import { getSleepStats } from "@/actions/sleep";
 import { getDiaperStats } from "@/actions/diaper";
+import { toChinaDateStr } from "@/lib/utils";
 import { CalendarPageClient } from "./calendar-client";
 
 const RANGE_DAYS: Record<string, number> = {
@@ -18,8 +19,9 @@ export default async function CalendarPage({
 }) {
   const params = await searchParams;
   const now = new Date();
+  const chinaToday = toChinaDateStr(now);
   const currentMonth =
-    params.month || `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+    params.month || chinaToday.slice(0, 7);
   const currentRange = params.range || "30";
 
   const [yearStr, monthStr] = currentMonth.split("-");
@@ -40,11 +42,11 @@ export default async function CalendarPage({
   for (let i = rangeDays - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = toChinaDateStr(d);
     feedingMap.set(key, { totalMl: 0, count: 0 });
   }
   for (const f of feedingRaw) {
-    const key = f.time.toISOString().slice(0, 10);
+    const key = toChinaDateStr(f.time);
     const entry = feedingMap.get(key);
     if (entry) {
       entry.totalMl += f.amount ?? 0;
@@ -64,17 +66,20 @@ export default async function CalendarPage({
   for (let i = rangeDays - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = toChinaDateStr(d);
     sleepMap.set(key, { daytime: 0, nighttime: 0 });
   }
   for (const s of sleepRaw) {
     if (!s.endTime) continue;
-    const key = s.startTime.toISOString().slice(0, 10);
+    const key = toChinaDateStr(s.startTime);
     const entry = sleepMap.get(key);
     if (!entry) continue;
     const hours =
       (s.endTime.getTime() - s.startTime.getTime()) / 3600000;
-    const startHour = s.startTime.getHours();
+    const startHour = parseInt(
+      s.startTime.toLocaleTimeString("en-US", { hour: "numeric", hour12: false, timeZone: "Asia/Shanghai" }),
+      10
+    );
     if (startHour >= 19 || startHour < 7) {
       entry.nighttime += hours;
     } else {
@@ -97,11 +102,11 @@ export default async function CalendarPage({
   for (let i = rangeDays - 1; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = toChinaDateStr(d);
     diaperMap.set(key, { wet: 0, dirty: 0, both: 0 });
   }
   for (const d of diaperRaw) {
-    const key = d.time.toISOString().slice(0, 10);
+    const key = toChinaDateStr(d.time);
     const entry = diaperMap.get(key);
     if (!entry) continue;
     if (d.type === "wet") entry.wet += 1;
@@ -132,6 +137,6 @@ export default async function CalendarPage({
 }
 
 function formatDayLabel(dateStr: string): string {
-  const d = new Date(dateStr);
-  return `${d.getMonth() + 1}/${d.getDate()}`;
+  const [, m, d] = dateStr.split("-");
+  return `${parseInt(m, 10)}/${parseInt(d, 10)}`;
 }

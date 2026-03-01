@@ -100,6 +100,7 @@ export function DayDetail({ dateStr }: DayDetailProps) {
                 month: "long",
                 day: "numeric",
                 weekday: "long",
+                timeZone: "Asia/Shanghai",
               })}
             </h3>
 

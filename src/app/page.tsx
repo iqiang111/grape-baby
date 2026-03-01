@@ -2,6 +2,7 @@ import { getFeedings, getFeedingStats, getRecentFeedings } from "@/actions/feedi
 import { getSleepRecords, getSleepStats } from "@/actions/sleep";
 import { getDiapers } from "@/actions/diaper";
 import { FEEDING_TYPES, DIAPER_TYPES } from "@/lib/constants";
+import { toChinaDateStr } from "@/lib/utils";
 import { OverviewCards } from "@/components/dashboard/overview-cards";
 import { QuickActions } from "@/components/dashboard/quick-actions";
 import { RecentActivity, type ActivityItem } from "@/components/dashboard/recent-activity";
@@ -47,11 +48,11 @@ export default async function Home() {
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = toChinaDateStr(d);
     feedingChartMap.set(key, { totalMl: 0, count: 0 });
   }
   for (const f of feedingStats) {
-    const key = f.time.toISOString().slice(0, 10);
+    const key = toChinaDateStr(f.time);
     const entry = feedingChartMap.get(key);
     if (entry) {
       entry.totalMl += f.amount ?? 0;
@@ -74,16 +75,16 @@ export default async function Home() {
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
     d.setDate(d.getDate() - i);
-    const key = d.toISOString().slice(0, 10);
+    const key = toChinaDateStr(d);
     sleepChartMap.set(key, { daytime: 0, nighttime: 0 });
   }
   for (const s of sleepStats) {
     if (!s.endTime) continue;
-    const key = s.startTime.toISOString().slice(0, 10);
+    const key = toChinaDateStr(s.startTime);
     const entry = sleepChartMap.get(key);
     if (!entry) continue;
     const hours = (s.endTime.getTime() - s.startTime.getTime()) / 3600000;
-    const startHour = s.startTime.getHours();
+    const startHour = parseInt(s.startTime.toLocaleTimeString("en-US", { hour: "numeric", hour12: false, timeZone: "Asia/Shanghai" }), 10);
     if (startHour >= 19 || startHour < 7) {
       entry.nighttime += hours;
     } else {
@@ -156,6 +157,7 @@ export default async function Home() {
             month: "long",
             day: "numeric",
             weekday: "long",
+            timeZone: "Asia/Shanghai",
           })}
         </p>
       </div>

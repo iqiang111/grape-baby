@@ -3,6 +3,7 @@
 import { getDb } from "@/db";
 import { feeding, sleepRecord, diaperRecord } from "@/db/schema";
 import { BABY_ID } from "@/lib/constants";
+import { toChinaDateStr } from "@/lib/utils";
 import { eq, and, gte, lte, asc } from "drizzle-orm";
 
 export interface DaySummary {
@@ -19,10 +20,10 @@ export async function getMonthSummary(
 ): Promise<Record<string, DaySummary>> {
   const db = await getDb();
 
-  const start = new Date(year, month - 1, 1);
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(year, month, 0);
-  end.setHours(23, 59, 59, 999);
+  // Build query range in UTC that covers the full China-time month
+  // China is UTC+8, so month start at 00:00 CST = previous day 16:00 UTC
+  const start = new Date(Date.UTC(year, month - 1, 1) - 8 * 3600000);
+  const end = new Date(Date.UTC(year, month, 1) - 8 * 3600000 - 1);
 
   const startISO = start.toISOString();
   const endISO = end.toISOString();
@@ -78,14 +79,14 @@ export async function getMonthSummary(
   };
 
   for (const f of feedings) {
-    const key = f.time.slice(0, 10);
+    const key = toChinaDateStr(f.time);
     ensureDay(key);
     result[key].feedingCount += 1;
     result[key].feedingTotalMl += f.amount ?? 0;
   }
 
   for (const s of sleeps) {
-    const key = s.startTime.slice(0, 10);
+    const key = toChinaDateStr(s.startTime);
     ensureDay(key);
     if (s.endTime) {
       const hours =
@@ -96,7 +97,7 @@ export async function getMonthSummary(
   }
 
   for (const d of diapers) {
-    const key = d.time.slice(0, 10);
+    const key = toChinaDateStr(d.time);
     ensureDay(key);
     result[key].diaperCount += 1;
   }

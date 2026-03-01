@@ -28,7 +28,7 @@ function getRelativeTime(dateStr: string | null) {
   if (minutes < 1) return "刚刚";
   if (minutes < 60) return `${minutes}分钟前`;
   if (hours < 24) return `${hours}小时前`;
-  return d.toLocaleDateString("zh-CN", { month: "long", day: "numeric" });
+  return d.toLocaleDateString("zh-CN", { month: "long", day: "numeric", timeZone: "Asia/Shanghai" });
 }
 
 export function OverviewCards({ stats }: { stats: OverviewStats }) {
@@ -68,6 +68,7 @@ export function OverviewCards({ stats }: { stats: OverviewStats }) {
         ? new Date(stats.lastFeedingTime).toLocaleTimeString("zh-CN", {
             hour: "2-digit",
             minute: "2-digit",
+            timeZone: "Asia/Shanghai",
           })
         : "--:--",
       icon: <Clock className="h-5 w-5 text-rose-300" />,
