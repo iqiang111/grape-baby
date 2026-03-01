@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getCloudflareContext } from "@opennextjs/cloudflare";
 
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/gif", "image/webp", "image/heic", "image/heif"];
 const ALLOWED_EXTS = ["jpg", "jpeg", "png", "gif", "webp", "heic", "heif"];
@@ -32,13 +31,27 @@ export async function POST(request: NextRequest) {
 
     const uniqueName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext || "jpg"}`;
 
+    if (process.env.NODE_ENV === "development") {
+      // 本地开发：写入文件系统
+      const { writeFile, mkdir } = await import("fs/promises");
+      const path = await import("path");
+      const uploadDir = path.join(process.cwd(), "public", "uploads");
+      await mkdir(uploadDir, { recursive: true });
+      const bytes = await file.arrayBuffer();
+      await writeFile(path.join(uploadDir, uniqueName), Buffer.from(bytes));
+      return NextResponse.json({ path: `/uploads/${uniqueName}` });
+    }
+
+    // 生产环境：写入 R2
+    const { getCloudflareContext } = await import("@opennextjs/cloudflare");
     const { env } = await getCloudflareContext();
     await env.R2.put(uniqueName, file.stream(), {
       httpMetadata: { contentType: file.type || "image/jpeg" },
     });
 
     return NextResponse.json({ path: `/api/uploads/${uniqueName}` });
-  } catch {
+  } catch (e) {
+    console.error("Upload error:", e);
     return NextResponse.json({ error: "上传失败，请重试" }, { status: 500 });
   }
 }

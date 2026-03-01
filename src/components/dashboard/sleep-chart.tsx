@@ -18,11 +18,11 @@ export interface SleepChartData {
 
 export function SleepChart({ data }: { data: SleepChartData[] }) {
   return (
-    <div className="glass-card p-6">
-      <h3 className="text-base font-semibold text-gray-900 mb-4">睡眠模式</h3>
-      <div className="h-64">
+    <div className="glass-card px-3 py-6 md:px-6">
+      <h3 className="text-base font-semibold text-gray-900 mb-4 px-3 md:px-0">睡眠模式</h3>
+      <div className="h-64 -mx-1">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 8, right: 8, left: 0, bottom: 4 }}>
+          <BarChart data={data} margin={{ top: 8, right: 24, left: -12, bottom: 4 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
             <XAxis
               dataKey="day"
@@ -31,10 +31,11 @@ export function SleepChart({ data }: { data: SleepChartData[] }) {
               tickLine={false}
             />
             <YAxis
-              tick={{ fontSize: 12, fill: "#737373" }}
+              tick={{ fontSize: 11, fill: "#737373" }}
               axisLine={false}
               tickLine={false}
               unit="h"
+              width={40}
             />
             <Tooltip
               contentStyle={{
