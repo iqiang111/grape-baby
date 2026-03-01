@@ -5,6 +5,7 @@ import { milestone } from "@/db/schema";
 import { BABY_ID } from "@/lib/constants";
 import { revalidatePath } from "next/cache";
 import { eq, and, desc } from "drizzle-orm";
+import { toISOFromChinaTime } from "@/lib/utils";
 
 export async function addMilestone(data: {
   date: string;
@@ -16,7 +17,7 @@ export async function addMilestone(data: {
   const db = await getDb();
   await db.insert(milestone).values({
     babyId: BABY_ID,
-    date: new Date(data.date).toISOString(),
+    date: toISOFromChinaTime(data.date),
     title: data.title,
     category: data.category,
     description: data.description || null,

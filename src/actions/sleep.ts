@@ -5,6 +5,7 @@ import { sleepRecord } from "@/db/schema";
 import { BABY_ID } from "@/lib/constants";
 import { revalidatePath } from "next/cache";
 import { eq, and, gte, lte, desc, asc, isNull } from "drizzle-orm";
+import { toISOFromChinaTime, getDayStart, getDayEnd } from "@/lib/utils";
 
 export async function addSleep(data: {
   startTime: string;
@@ -15,8 +16,8 @@ export async function addSleep(data: {
   const db = await getDb();
   await db.insert(sleepRecord).values({
     babyId: BABY_ID,
-    startTime: new Date(data.startTime).toISOString(),
-    endTime: data.endTime ? new Date(data.endTime).toISOString() : null,
+    startTime: toISOFromChinaTime(data.startTime),
+    endTime: data.endTime ? toISOFromChinaTime(data.endTime) : null,
     quality: data.quality || null,
     note: data.note || null,
   });
@@ -28,7 +29,7 @@ export async function endSleep(id: string, endTime: string) {
   const db = await getDb();
   await db
     .update(sleepRecord)
-    .set({ endTime: new Date(endTime).toISOString() })
+    .set({ endTime: toISOFromChinaTime(endTime) })
     .where(eq(sleepRecord.id, id));
   revalidatePath("/");
   revalidatePath("/sleep");
@@ -43,10 +44,8 @@ export async function deleteSleep(id: string) {
 
 export async function getSleepRecords(date?: Date) {
   const db = await getDb();
-  const start = new Date(date || new Date());
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(start);
-  end.setHours(23, 59, 59, 999);
+  const start = getDayStart(date || new Date());
+  const end = getDayEnd(date || new Date());
 
   const rows = await db
     .select()
@@ -94,9 +93,8 @@ export async function getActiveSleep() {
 
 export async function getSleepStats(days = 7) {
   const db = await getDb();
-  const start = new Date();
-  start.setDate(start.getDate() - days);
-  start.setHours(0, 0, 0, 0);
+  const start = getDayStart(new Date());
+  const startAdjusted = new Date(start.getTime() - days * 24 * 60 * 60 * 1000);
 
   const rows = await db
     .select()
@@ -104,7 +102,7 @@ export async function getSleepStats(days = 7) {
     .where(
       and(
         eq(sleepRecord.babyId, BABY_ID),
-        gte(sleepRecord.startTime, start.toISOString())
+        gte(sleepRecord.startTime, startAdjusted.toISOString())
       )
     )
     .orderBy(asc(sleepRecord.startTime));

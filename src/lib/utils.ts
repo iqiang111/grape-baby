@@ -47,16 +47,22 @@ export function toChinaDateStr(date: Date | string): string {
   return d.toLocaleDateString("sv-SE", { timeZone: TZ }); // sv-SE locale gives "YYYY-MM-DD"
 }
 
+/** 将客户端发来的无时区日期字符串按中国时间解析，返回 UTC ISO 字符串 */
+export function toISOFromChinaTime(localStr: string): string {
+  if (localStr.includes("T")) {
+    return new Date(localStr + "+08:00").toISOString();
+  }
+  return new Date(localStr + "T00:00:00+08:00").toISOString();
+}
+
 export function getDayStart(date: Date = new Date()) {
-  const d = new Date(date);
-  d.setHours(0, 0, 0, 0);
-  return d;
+  const chinaDateStr = toChinaDateStr(date);
+  return new Date(chinaDateStr + "T00:00:00+08:00");
 }
 
 export function getDayEnd(date: Date = new Date()) {
-  const d = new Date(date);
-  d.setHours(23, 59, 59, 999);
-  return d;
+  const chinaDateStr = toChinaDateStr(date);
+  return new Date(chinaDateStr + "T23:59:59.999+08:00");
 }
 
 export function minutesToHoursMinutes(minutes: number) {

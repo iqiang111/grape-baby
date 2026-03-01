@@ -5,6 +5,7 @@ import { diaperRecord } from "@/db/schema";
 import { BABY_ID } from "@/lib/constants";
 import { revalidatePath } from "next/cache";
 import { eq, and, gte, lte, desc, asc } from "drizzle-orm";
+import { toISOFromChinaTime, getDayStart, getDayEnd } from "@/lib/utils";
 
 export async function addDiaper(data: {
   time: string;
@@ -15,7 +16,7 @@ export async function addDiaper(data: {
   const db = await getDb();
   await db.insert(diaperRecord).values({
     babyId: BABY_ID,
-    time: new Date(data.time).toISOString(),
+    time: toISOFromChinaTime(data.time),
     type: data.type,
     color: data.color || null,
     note: data.note || null,
@@ -33,10 +34,8 @@ export async function deleteDiaper(id: string) {
 
 export async function getDiapers(date?: Date) {
   const db = await getDb();
-  const start = new Date(date || new Date());
-  start.setHours(0, 0, 0, 0);
-  const end = new Date(start);
-  end.setHours(23, 59, 59, 999);
+  const start = getDayStart(date || new Date());
+  const end = getDayEnd(date || new Date());
 
   const rows = await db
     .select()
@@ -59,9 +58,8 @@ export async function getDiapers(date?: Date) {
 
 export async function getDiaperStats(days = 7) {
   const db = await getDb();
-  const start = new Date();
-  start.setDate(start.getDate() - days);
-  start.setHours(0, 0, 0, 0);
+  const start = getDayStart(new Date());
+  const startAdjusted = new Date(start.getTime() - days * 24 * 60 * 60 * 1000);
 
   const rows = await db
     .select()
@@ -69,7 +67,7 @@ export async function getDiaperStats(days = 7) {
     .where(
       and(
         eq(diaperRecord.babyId, BABY_ID),
-        gte(diaperRecord.time, start.toISOString())
+        gte(diaperRecord.time, startAdjusted.toISOString())
       )
     )
     .orderBy(asc(diaperRecord.time));

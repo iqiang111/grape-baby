@@ -5,6 +5,7 @@ import { vaccination, doctorVisit, temperature } from "@/db/schema";
 import { BABY_ID } from "@/lib/constants";
 import { revalidatePath } from "next/cache";
 import { eq, and, gte, desc, asc } from "drizzle-orm";
+import { toISOFromChinaTime, getDayStart } from "@/lib/utils";
 
 // Vaccination
 export async function addVaccination(data: {
@@ -21,8 +22,8 @@ export async function addVaccination(data: {
     babyId: BABY_ID,
     name: data.name,
     doseNumber: data.doseNumber,
-    scheduledDate: new Date(data.scheduledDate).toISOString(),
-    actualDate: data.actualDate ? new Date(data.actualDate).toISOString() : null,
+    scheduledDate: toISOFromChinaTime(data.scheduledDate),
+    actualDate: data.actualDate ? toISOFromChinaTime(data.actualDate) : null,
     hospital: data.hospital || null,
     batchNumber: data.batchNumber || null,
     note: data.note || null,
@@ -37,7 +38,7 @@ export async function updateVaccination(
   const db = await getDb();
   const updateData: Record<string, string | null> = {};
   if (data.actualDate !== undefined) {
-    updateData.actualDate = data.actualDate ? new Date(data.actualDate).toISOString() : null;
+    updateData.actualDate = data.actualDate ? toISOFromChinaTime(data.actualDate) : null;
   }
   if (data.hospital !== undefined) updateData.hospital = data.hospital;
   if (data.batchNumber !== undefined) updateData.batchNumber = data.batchNumber;
@@ -81,7 +82,7 @@ export async function addDoctorVisit(data: {
   const db = await getDb();
   await db.insert(doctorVisit).values({
     babyId: BABY_ID,
-    date: new Date(data.date).toISOString(),
+    date: toISOFromChinaTime(data.date),
     hospital: data.hospital,
     doctor: data.doctor || null,
     reason: data.reason,
@@ -123,7 +124,7 @@ export async function addTemperature(data: {
   const db = await getDb();
   await db.insert(temperature).values({
     babyId: BABY_ID,
-    time: new Date(data.time).toISOString(),
+    time: toISOFromChinaTime(data.time),
     value: data.value,
     method: data.method || null,
     note: data.note || null,
@@ -139,9 +140,8 @@ export async function deleteTemperature(id: string) {
 
 export async function getTemperatures(days = 7) {
   const db = await getDb();
-  const start = new Date();
-  start.setDate(start.getDate() - days);
-  start.setHours(0, 0, 0, 0);
+  const start = getDayStart(new Date());
+  const startAdjusted = new Date(start.getTime() - days * 24 * 60 * 60 * 1000);
 
   const rows = await db
     .select()
@@ -149,7 +149,7 @@ export async function getTemperatures(days = 7) {
     .where(
       and(
         eq(temperature.babyId, BABY_ID),
-        gte(temperature.time, start.toISOString())
+        gte(temperature.time, startAdjusted.toISOString())
       )
     )
     .orderBy(desc(temperature.time));

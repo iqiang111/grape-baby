@@ -5,6 +5,7 @@ import { growthRecord, baby } from "@/db/schema";
 import { BABY_ID } from "@/lib/constants";
 import { revalidatePath } from "next/cache";
 import { eq, asc } from "drizzle-orm";
+import { toISOFromChinaTime } from "@/lib/utils";
 
 export async function addGrowthRecord(data: {
   date: string;
@@ -16,7 +17,7 @@ export async function addGrowthRecord(data: {
   const db = await getDb();
   await db.insert(growthRecord).values({
     babyId: BABY_ID,
-    date: new Date(data.date).toISOString(),
+    date: toISOFromChinaTime(data.date),
     weight: data.weight || null,
     height: data.height || null,
     headCirc: data.headCirc || null,
