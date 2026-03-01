@@ -22,7 +22,7 @@ export function SleepChart({ data }: { data: SleepChartData[] }) {
       <h3 className="text-base font-semibold text-gray-900 mb-4 px-3 md:px-0">睡眠模式</h3>
       <div className="h-64 -mx-1">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 8, right: 24, left: -12, bottom: 4 }}>
+          <BarChart data={data} margin={{ top: 8, right: 24, left: 0, bottom: 4 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f5f5f5" />
             <XAxis
               dataKey="day"

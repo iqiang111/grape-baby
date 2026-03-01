@@ -47,8 +47,13 @@ export function toChinaDateStr(date: Date | string): string {
   return d.toLocaleDateString("sv-SE", { timeZone: TZ }); // sv-SE locale gives "YYYY-MM-DD"
 }
 
-/** 将客户端发来的无时区日期字符串按中国时间解析，返回 UTC ISO 字符串 */
+/** 将客户端发来的日期字符串按中国时间解析，返回 UTC ISO 字符串。
+ *  若已包含时区信息（Z 或 +/-offset），直接转换；否则视为中国本地时间。 */
 export function toISOFromChinaTime(localStr: string): string {
+  // Already has timezone info (e.g. "2026-03-01T07:30:00.000Z" or "...+08:00")
+  if (localStr.endsWith("Z") || /[+-]\d{2}:\d{2}$/.test(localStr)) {
+    return new Date(localStr).toISOString();
+  }
   if (localStr.includes("T")) {
     return new Date(localStr + "+08:00").toISOString();
   }
