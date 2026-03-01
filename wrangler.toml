@@ -1,6 +1,11 @@
 name = "grape-baby"
+main = ".open-next/worker.js"
 compatibility_flags = ["nodejs_compat"]
 compatibility_date = "2025-12-30"
+
+[assets]
+directory = ".open-next/assets"
+binding = "ASSETS"
 
 [vars]
 
