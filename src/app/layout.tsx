@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "记录小葡萄的每一个珍贵瞬间",
 };
 
+export const dynamic = "force-dynamic";
+
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
